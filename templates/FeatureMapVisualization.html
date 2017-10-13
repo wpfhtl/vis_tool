@@ -1,0 +1,36 @@
+{% extends "result.html" %}
+{% block vis %}
+{%for results in namelist %}    
+    {%if results.datatype=="featuremaps"%}
+    <table class="table table-sm table-striped">
+    <caption><font size="20" style="font-weight:bold;float:left;margin-top:10px">{{results.data[0]}}</font></caption>
+  <tbody>
+   <tr>
+      <td align="center"><b></td>
+      {% for result in results.data[1] %}
+       <td align="center">
+       <a href="{{url_for('feature_page.show')}}?layer={{results.number}}&number={{result[0]}}" target="_blank">
+           <b>profile {{result[0]}}</b>
+       </a>
+       </td>
+      {% endfor %}
+         </tr>
+   <tr>
+    <td align="center">
+      <a href="inputs/{{image}}?a={{rand}}" target="_blank">
+          <img  src="inputs/{{image}}?a={{rand}}" style="width:244px;height:244px;"/>
+      </a>
+    </td>
+    {% for result in results.data[1] %}
+          <td align="center">
+          <a href="outputs/{{ result[1] }}?a={{rand}}" target="_blank">
+           <img src="outputs/{{ result[1] }}?a={{rand}}" style="width:244px;height:244px;"/>
+          </a>
+          </td>
+          {%endfor%}
+  </tr>
+  </tbody>
+    </table> 
+    {%endif%}
+{%endfor%}
+{% endblock %}

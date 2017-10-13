@@ -1,0 +1,26 @@
+{%extends "result.html"%}
+{%block vis%}
+<table class="table table-sm table-striped">
+	<tbody>
+	  <tr>
+        <td align="center"><b>{{image}}</b></td>
+        {% for nn in namelist %}
+            <td align="center"><b>{{nn[0]}}</b></td>
+        {% endfor %}
+      </tr>
+      <td align="center">
+      <a href="inputs/{{image}}" target="_blank">
+        <img src="inputs/{{image}}" style="width:244px;height:244px;"/>
+      </a>
+      </td>
+	  {% for nn in namelist %}
+          <td align="center">
+          <a href="outputs/{{nn[1]}}?a={{rand}}" target="_blank">
+           <img herf="outputs/{{nn[1]}}?image={{image}}", src="outputs/{{nn[1]}}?a={{rand}}" style="width:244px;height:244px;"/>
+          </a>
+          </td>
+          {%endfor%}
+	</tr>
+	</tbody>
+    </table> 
+{%endblock%}

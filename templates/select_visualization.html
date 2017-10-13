@@ -1,0 +1,86 @@
+{%extends "layout.html" %}
+{% block body %}
+  <form id="upmodel" action="{{ url_for('app.save_model') }}" method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+          <label for="fileupload">Select model file</label>
+          <input id ="i1" type="file" name="file[]" multiple="" id="fileupload">
+          <label class="btn btn-primary">
+          Upload <input type="submit" value="Upload model" style="display: none;">
+          </label>
+        </div>
+  </form>
+  <form id="uppth" action="{{ url_for('app.save_model_pth') }}" method="POST" enctype="multipart/form-data">
+                <div class="form-group">
+                <label for="fileupload">Select input pth file</label>
+                <input type="file" name="file[]" multiple="" id="fileupload">
+                <label class="btn btn-primary">
+                Upload <input type="submit" value="Upload image" style="display: none;">
+                </label>
+                </div>
+        </form>
+  <form id="upimage" action="{{ url_for('app.save_image') }}" method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+          <label for="fileupload">Select input image</label>
+          <input type="file" name="file[]" multiple="" id="fileupload">
+          <label class="btn btn-primary">
+          Upload <input type="submit" value="Upload image" style="display: none;">
+          </label>
+        </div>
+  </form>
+  <form id="upchoose" name="choice" action="{{ url_for('app.process') }}"  method="POST">
+                <div class="form-group">
+                        <label for="vis-select">Select visual method</label>
+                        <select class="form-control" name="choice" id="vis-select">
+                                {% for vis in visualizations %}
+                                        <option value="{{ vis.name }}">{{ vis.description }}</option>
+                                {% endfor %}
+                        </select>
+                </div>
+                <div class="form-group">
+                        <button class="btn btn-primary btn-block" type="submit">Go!</button>
+                </div>
+        </form>
+
+  <div id="loading" style="display:none;" align="center">
+  <p style="text-align:center;"><img src="/static/loading.gif" align="middle"></p>
+  </div>
+
+  <div id="mainbody">
+  </div>
+  <script>
+      $(document).ready(function() {
+    var options = {
+      target: '#mainbody',
+    success:  function(data)
+    {
+      document.getElementById("loading").style.display="none"
+      
+    }
+      };
+        $('#upmodel').submit(function() {
+                document.getElementById("loading").style.display="inline"
+      $(this).ajaxSubmit(options);
+      return false; 
+    });
+      $('#uppth').submit(function() {
+                document.getElementById("loading").style.display="inline"
+                $(this).ajaxSubmit(options);
+                return false;
+                });
+      $('#upimage').submit(function() {
+    document.getElementById("loading").style.display="inline"
+                $(this).ajaxSubmit(options);
+                return false;
+                });
+       $('#upchoose').submit(function() {
+    document.getElementById("loading").style.display="inline"
+                $(this).ajaxSubmit(options);
+                return false;
+                });
+      });
+      function showResponse(responseText, statusText, xhr, $form) {
+    alert(xhr.responseText);};
+  </script>
+{% endblock %}
+
+

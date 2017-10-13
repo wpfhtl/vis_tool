@@ -1,0 +1,9 @@
+{% extends "result.html" %}
+{%block vis%}
+<div>
+    <font size="30" style="font-weight:bold;float:left;margin-top:10px">bar of result:</font>
+    <a href="outputs/{{namelist}}?a={{rand}}">
+            <img  src="outputs/{{namelist}}?a={{rand}}" style="width:3000px;height:800px;"/>
+        </a>
+</div>
+{%endblock%}

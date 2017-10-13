@@ -1,0 +1,91 @@
+from .base import BaseVisualization
+import inspect
+import torch
+import argparse
+import torch.nn as nn
+import torch.nn.functional as F
+import torch.optim as optim
+from torchvision import datasets, transforms
+from torch.autograd import Variable
+from PIL import Image
+import torch
+import glob
+import numpy as np
+import os
+import sys
+import torch.utils.model_zoo as model_zoo
+import math
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.mlab as mlab    
+import matplotlib.pyplot as plt  
+all_type=["featuremaps","1Ddata"]
+class transedata:
+    def __init__(self,dtype,d):
+	self.datatype=dtype
+	self.data=d
+class mytracer:
+    def __init__(self):
+        self.filter_list=[]
+	self.traceinfo=[]
+        for obj in inspect.getmembers(F):
+            self.filter_list.append(obj[0])
+    def traceit(self,frame, event, arg):
+        if event == 'return' and frame.f_back.f_code.co_name == 'forward':
+	    if frame.f_code.co_name in self.filter_list:
+            	self.traceinfo.append((len(self.traceinfo),(frame.f_code.co_name,arg)))     
+                print frame.f_code.co_name
+	    	print arg.size()
+	    if frame.f_code.co_name == "__call__":
+                m = frame.f_locals["self"]
+             	l_input = frame.f_locals["input"]
+             	if type(m) is nn.Linear:
+	            name=str(m).split(' ')[0].lower()
+		    self.traceinfo.append((len(self.traceinfo),(name,arg)))
+                    print name
+	            print arg.size()
+        return self.traceit
+def storefeatures(raws,output_dir):
+    num=0
+    namelist=[]
+    preprocess = transforms.Compose([transforms.ToPILImage()])
+    for raw in raws:
+        name=str(raw[1][0])+"_"+str(raw[0]+1)
+	if raw[1][1].dim()>2:
+	    number=0
+	    layerlist=[]
+	    for tpic in raw[1][1][0]:
+		tpic=tpic.data.unsqueeze(0)
+            	tpic=preprocess(tpic)
+		nowname=name+"_"+str(number)+".png"
+		layerlist.append(nowname)
+		tpic.save(output_dir+"/"+nowname)
+		number=number+1
+	        data=transedata(all_type[0],(name,layerlist))
+            namelist.append(data)
+	if raw[1][1].dim()==-1:
+	    ndarr=raw[1][1][0].data.numpy().tolist()
+	    x=(np.arange(len(ndarr))+1).tolist()
+	    y=ndarr
+	    plt.figure(figsize=(len(ndarr),4),dpi=10)
+	    ax=plt.gca()  
+	    ax.xaxis.set_major_formatter(matplotlib.ticker.FormatStrFormatter('%d'))
+	    plt.bar(x,y,facecolor = 'lightskyblue',color="black",tick_label=x )  
+	    nowname=name+"_"+"barfigure.jpg"
+	    file_name=output_dir+"/"+nowname
+	    plt.savefig(file_name,bbox_inches='tight')   
+	    plt.clf()
+	    data=transedata(all_type[1],(name,nowname))
+	    namelist.append(data) 
+    return namelist
+def getfeaturemap(model,images,output_dir):
+    tc=mytracer()
+    model.eval()
+    sys.settrace(tc.traceit)
+    model(images)
+    rawoutput=tc.traceinfo
+    return storefeatures(rawoutput,output_dir)
+class FeatureMapVisualization(BaseVisualization):
+    description = 'show featuremaps!'
+    def make_visualization(self,model,image,output_dir):
+	return getfeaturemap(model,image,output_dir)

@@ -1,0 +1,23 @@
+ <table class="table table-sm table-striped">
+    <caption><font size="5" style="font-weight:bold;float:left;margin-top:10px">layer:{{layer}},feature map:{{number}}</font></caption>
+    <tbody>
+   	   <tr>
+    	 {% for name in namelist %}
+          <td align="center">
+	          <a href="outputs/{{name[1]}}?a={{rand}}" target="_blank">
+	           <img src="outputs/{{name[1]}}?a={{rand}}" style="width:244px;height:244px;"/>
+	          </a>
+          </td>
+         {%endfor%}
+       </tr>
+        <tr>
+          {% for name in namelist %}
+            <td align="center">
+              <b>{{name[0]}}</b>
+            </td>
+          {% endfor %}
+        </tr>
+
+    </tbody>
+</table> 
+
